@@ -8,12 +8,17 @@ const passport = require("passport");
 // Load User model
 const User = require("../models/User");
 
-// Load Profile model
-const Profile = require("../models/Profile");
-
 // Load Validation
 const validateRegisterInput = require("../validation/register");
 const validateLoginInput = require("../validation/login");
+
+router.get(
+  "/current",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.json(req.user);
+  }
+);
 
 // @route   POST /api/user/register
 // @desc    Register a user
