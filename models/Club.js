@@ -40,7 +40,7 @@ const ClubSchema = new Schema({
       ref: "books"
     }
   },
-  posts: [
+  discussionPosts: [
     {
       type: Schema.Types.ObjectId,
       ref: "posts"
