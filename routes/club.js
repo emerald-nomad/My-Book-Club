@@ -15,10 +15,12 @@ const validateClubInput = require("../validation/club");
 // access   Public
 router.get("/all", async (req, res) => {
   try {
+    // Get all clubs
     const clubs = await Club.find();
 
     res.json(clubs);
   } catch (error) {
+    console.log(error);
     res.status(500).json(error);
   }
 });
@@ -31,9 +33,11 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
+      // Validate input
       const { errors, isValid } = validateClubInput(req.body);
 
       if (!isValid) {
+        // If invalid return error
         return res.status(400).json(errors);
       }
 
@@ -47,6 +51,7 @@ router.post(
 
       // Create new club
       const newClub = new Club(req.body);
+      // Making signed in user admin of club
       newClub.admin = req.user.id;
 
       const createdClub = await newClub.save();
@@ -58,6 +63,7 @@ router.post(
 
       return res.json(createdClub);
     } catch (error) {
+      console.log(error);
       res.status(500).json(error);
     }
   }
@@ -70,21 +76,22 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
+      // Find club by id
       const club = await Club.findById(req.body.clubId);
 
+      // Check if signed in user is the admin
       if (club.admin.toString() !== req.user.id)
         return res.status(400).json({ admin: "You are not the admin." });
 
-      await Club.findByIdAndRemove(req.body.clubId);
-
+      // Get user's profile
       const admin = await Profile.findOne({ user: req.user.id });
 
+      // Remove club from user's myClubs array
       const removeIndex = admin.myClubs.indexOf(req.body.clubId);
-
       admin.myClubs.splice(removeIndex, 1);
-
       await admin.save();
 
+      // Loop through members of the club and remove club from their clubs array
       for (const member of club.members) {
         const clubMember = await Profile.findOne({ user: member });
 
@@ -95,6 +102,8 @@ router.delete(
         await clubMember.save();
       }
 
+      // Remove club from database
+      await Club.findByIdAndRemove(req.body.clubId);
       res.json({ success: true });
     } catch (error) {
       console.log(error);

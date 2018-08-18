@@ -17,6 +17,7 @@ router.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
+    // Check for input errors
     const { errors, isValid } = validateProfileInput(req.body);
 
     if (!isValid) {
@@ -55,6 +56,7 @@ router.post(
         res.json(newProfile);
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json(error);
     }
   }
@@ -68,10 +70,12 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
+      // Get user's profile
       let profile = await Profile.findOne({ user: req.user.id });
       res.json(profile);
     } catch (error) {
       console.log(error);
+      res.status(500).json(error);
     }
   }
 );
@@ -84,10 +88,12 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
+      // Find a user's profile by id
       let profile = await Profile.findOne({ user: req.user.id });
       res.json(profile);
     } catch (error) {
       console.log(error);
+      res.status(500).json(error);
     }
   }
 );
@@ -101,6 +107,7 @@ router.post(
   async (req, res) => {
     try {
       const errors = {};
+      // Get club by club id
       const club = await Club.findById(req.body.clubId);
 
       // Check to see if club exists
@@ -109,6 +116,7 @@ router.post(
         return res.status(400).json(errors);
       }
 
+      // Map club memeber id to strings
       const members = club.members.map(member => member.toString());
 
       // Check to see if user is a admin or member of club
@@ -128,6 +136,7 @@ router.post(
       // Add club to user's profile
       profile.clubs.push(club.id);
 
+      // Save the updated profile
       const updatedProfile = await profile.save();
 
       // Add user to club's members
@@ -137,6 +146,7 @@ router.post(
       res.json(updatedProfile);
     } catch (error) {
       console.log(error);
+      res.status(500).json(error);
     }
   }
 );
@@ -149,8 +159,10 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
+      // Get profile by user id
       const profile = await Profile.findOne({ user: req.user.id });
 
+      // Get club by club id
       const club = await Club.findById(req.params.clubId);
 
       // Get remove index
@@ -169,12 +181,12 @@ router.delete(
 
       // Splice out of array
       club.members.splice(profileRemoveIndex, 1);
-      club.save();
+      await club.save();
 
       res.json(updatedProfile);
     } catch (error) {
-      res.status(500).json(error);
       console.log(error);
+      res.status(500).json(error);
     }
   }
 );
