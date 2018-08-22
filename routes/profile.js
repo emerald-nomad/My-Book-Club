@@ -6,9 +6,12 @@ const passport = require("passport");
 const Profile = require("../models/Profile");
 // Load Club model
 const Club = require("../models/Club");
+// Load Book model
+const Book = require("../models/Book");
 
 // Load Validation
 const validateProfileInput = require("../validation/profile");
+const validateBookInput = require("../validation/book");
 
 // @route   Post /api/profile
 // @desc    Create or update user's profile
@@ -184,6 +187,126 @@ router.delete(
       await club.save();
 
       res.json(updatedProfile);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+// @route   Post /api/profile/book/current
+// @desc    Add book to user's current books array
+// access   Private
+router.post(
+  "/book/current",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      // Check for input errors
+      const { errors, isValid } = validateBookInput(req.body);
+
+      if (!isValid) {
+        // If not valid return errors object
+        return res.status(400).json(errors);
+      }
+
+      // Get user's bookshelf
+      const profile = await Profile.findOne({ user: req.user.id });
+
+      const { bookShelf } = profile;
+
+      // Check to see if book is already in data
+      const book = await Book.findOne({ isbn: req.body.isbn });
+
+      if (book) {
+        bookShelf.booksCurrent.push(book._id);
+        await profile.update({ bookShelf });
+      } else {
+        const newBook = await new Book(req.body).save();
+        bookShelf.booksCurrent.push(newBook._id);
+        await profile.update({ bookShelf });
+      }
+
+      res.json(bookShelf);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+// @route   Post /api/profile/book/future
+// @desc    Add book to user's future books array
+// access   Private
+router.post(
+  "/book/future",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      // Check for input errors
+      const { errors, isValid } = validateBookInput(req.body);
+
+      if (!isValid) {
+        // If not valid return errors object
+        return res.status(400).json(errors);
+      }
+
+      // Get user's bookshelf
+      const profile = await Profile.findOne({ user: req.user.id });
+
+      const { bookShelf } = profile;
+
+      // Check to see if book is already in data
+      const book = await Book.findOne({ isbn: req.body.isbn });
+
+      if (book) {
+        bookShelf.booksFuture.push(book._id);
+        await profile.update({ bookShelf });
+      } else {
+        const newBook = await new Book(req.body).save();
+        bookShelf.booksFuture.push(newBook._id);
+        await profile.update({ bookShelf });
+      }
+
+      res.json(bookShelf);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+// @route   Post /api/profile/book/past/bookId
+// @desc    Change user's current book
+// access   Private
+router.post(
+  "/book/past/:bookId",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const errors = {};
+
+      // Get user's bookshelf
+      const profile = await Profile.findOne({ user: req.user.id });
+      const { bookShelf } = profile;
+
+      // Change book id's from objects to strings
+      const books = bookShelf.booksCurrent.map(book => book.toString());
+      if (!books.includes(req.params.bookId)) {
+        errors.book = "You're not currently reading this book.";
+        return res.status(400).json(errors);
+      }
+
+      const bookIndex = books.indexOf(req.params.bookId);
+
+      // Add book to user's books read
+      bookShelf.booksPast.push(bookShelf.booksCurrent[bookIndex]);
+
+      // Remove book from user's current books
+      bookShelf.booksCurrent.splice(bookIndex, 1);
+
+      await profile.update({ bookShelf });
+      res.json(bookShelf);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
