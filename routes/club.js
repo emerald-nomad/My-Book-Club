@@ -6,9 +6,12 @@ const passport = require("passport");
 const Club = require("../models/Club");
 // Load Profile model
 const Profile = require("../models/Profile");
+// Load Book model
+const Book = require("../models/Book");
 
-// Validation
+// Load Validation
 const validateClubInput = require("../validation/club");
+const validateBookInput = require("../validation/book");
 
 // @route   Get /api/club/all
 // @desc    Get all clubs
@@ -68,16 +71,16 @@ router.post(
     }
   }
 );
-// @route   DELETE /api/club/
+// @route   DELETE /api/club/clubId
 // @desc    Delete a club
 // access   Private
 router.delete(
-  "/",
+  "/:clubId",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
       // Find club by id
-      const club = await Club.findById(req.body.clubId);
+      const club = await Club.findById(req.params.clubId);
 
       // Check if signed in user is the admin
       if (club.admin.toString() !== req.user.id)
@@ -95,7 +98,7 @@ router.delete(
       for (const member of club.members) {
         const clubMember = await Profile.findOne({ user: member });
 
-        const removeIndex = clubMember.clubs.indexOf(req.body.clubId);
+        const removeIndex = clubMember.clubs.indexOf(req.params.clubId);
 
         clubMember.clubs.splice(removeIndex, 1);
 
@@ -103,8 +106,115 @@ router.delete(
       }
 
       // Remove club from database
-      await Club.findByIdAndRemove(req.body.clubId);
+      await Club.findByIdAndRemove(req.params.clubId);
       res.json({ success: true });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+// @route   Post /api/club/clubId/book_current
+// @desc    Change club's current book
+// access   Private
+router.post(
+  "/:clubId/book_current",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      // Validate input
+      const { errors, isValid } = validateBookInput(req.body);
+
+      if (!isValid) {
+        // If not valid return errors object
+        return res.status(400).json(errors);
+      }
+
+      // Get club by id
+      const club = await Club.findById(req.params.clubId);
+
+      // Check if signed in user is the admin
+      if (club.admin.toString() !== req.user.id)
+        return res.status(400).json({ admin: "You are not the admin." });
+
+      // Get club's bookshelf
+      const { bookshelf } = club;
+
+      // Check to see if book is already in database
+      let book = await Book.findOne({ isbn: req.body.isbn });
+
+      // Check to see if book is already set as current
+      if (book._id.toString() === bookshelf.bookCurrent.toString()) {
+        errors.book = "Book already set as the current book.";
+        return res.status(400).json(errors);
+      }
+
+      // Add book to database if it isn't already there
+      if (!book) {
+        book = await new Book(req.body).save();
+      }
+
+      // If book present in bookCurrent, add
+      // that book to booksPast
+      if (bookshelf.bookCurrent) {
+        bookshelf.booksPast.push(bookshelf.bookCurrent);
+      }
+
+      // Put book id into bookCurrent
+      bookshelf.bookCurrent = book._id;
+
+      // Update club
+      await club.update({ bookshelf });
+      res.json(bookshelf);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+// @route   Post /api/club/clubId/book_future
+// @desc    Change club's current book
+// access   Private
+router.post(
+  "/:clubId/book_future",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      // Validate input
+      const { errors, isValid } = validateBookInput(req.body);
+
+      if (!isValid) {
+        // If not valid return errors object
+        return res.status(400).json(errors);
+      }
+
+      // Get club by id
+      const club = await Club.findById(req.params.clubId);
+
+      // Check if signed in user is the admin
+      if (club.admin.toString() !== req.user.id)
+        return res.status(400).json({ admin: "You are not the admin." });
+
+      // Get club's bookshelf
+      const { bookshelf } = club;
+
+      // Check to see if book is already in database
+      let book = await Book.findOne({ isbn: req.body.isbn });
+
+      // Add book to database if it isn't already there
+      if (!book) {
+        book = await new Book(req.body).save();
+      }
+
+      // Add book to booksFuture
+      bookshelf.booksFuture.push(book._id);
+
+      // Update the club
+      await club.update({ bookshelf });
+
+      res.json(bookshelf);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
