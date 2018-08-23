@@ -194,11 +194,11 @@ router.delete(
   }
 );
 
-// @route   Post /api/profile/book/current
+// @route   Post /api/profile/book_current
 // @desc    Add book to user's current books array
 // access   Private
 router.post(
-  "/book/current",
+  "/book_current",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
@@ -213,21 +213,18 @@ router.post(
       // Get user's bookshelf
       const profile = await Profile.findOne({ user: req.user.id });
 
-      const { bookShelf } = profile;
+      const { bookshelf } = profile;
 
-      // Check to see if book is already in data
-      const book = await Book.findOne({ isbn: req.body.isbn });
+      // Check to see if book is already in database
+      let book = await Book.findOne({ isbn: req.body.isbn });
 
-      if (book) {
-        bookShelf.booksCurrent.push(book._id);
-        await profile.update({ bookShelf });
-      } else {
-        const newBook = await new Book(req.body).save();
-        bookShelf.booksCurrent.push(newBook._id);
-        await profile.update({ bookShelf });
+      if (!book) {
+        book = await new Book(req.body).save();
       }
 
-      res.json(bookShelf);
+      bookshelf.booksCurrent.push(newBook._id);
+      await profile.update({ bookshelf });
+      res.json(bookshelf);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
@@ -235,11 +232,11 @@ router.post(
   }
 );
 
-// @route   Post /api/profile/book/future
+// @route   Post /api/profile/book_future
 // @desc    Add book to user's future books array
 // access   Private
 router.post(
-  "/book/future",
+  "/book_future",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
@@ -253,22 +250,21 @@ router.post(
 
       // Get user's bookshelf
       const profile = await Profile.findOne({ user: req.user.id });
-
-      const { bookShelf } = profile;
+      const { bookshelf } = profile;
 
       // Check to see if book is already in data
       const book = await Book.findOne({ isbn: req.body.isbn });
 
       if (book) {
-        bookShelf.booksFuture.push(book._id);
-        await profile.update({ bookShelf });
+        bookshelf.booksFuture.push(book._id);
+        await profile.update({ bookshelf });
       } else {
         const newBook = await new Book(req.body).save();
-        bookShelf.booksFuture.push(newBook._id);
-        await profile.update({ bookShelf });
+        bookshelf.booksFuture.push(newBook._id);
+        await profile.update({ bookshelf });
       }
 
-      res.json(bookShelf);
+      res.json(bookshelf);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
@@ -276,11 +272,11 @@ router.post(
   }
 );
 
-// @route   Post /api/profile/book/past/bookId
+// @route   Post /api/profile/book_past/bookId
 // @desc    Change user's current book
 // access   Private
 router.post(
-  "/book/past/:bookId",
+  "/book_past/:bookId",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
@@ -288,10 +284,10 @@ router.post(
 
       // Get user's bookshelf
       const profile = await Profile.findOne({ user: req.user.id });
-      const { bookShelf } = profile;
+      const { bookshelf } = profile;
 
       // Change book id's from objects to strings
-      const books = bookShelf.booksCurrent.map(book => book.toString());
+      const books = bookshelf.booksCurrent.map(book => book.toString());
       if (!books.includes(req.params.bookId)) {
         errors.book = "You're not currently reading this book.";
         return res.status(400).json(errors);
@@ -300,13 +296,13 @@ router.post(
       const bookIndex = books.indexOf(req.params.bookId);
 
       // Add book to user's books read
-      bookShelf.booksPast.push(bookShelf.booksCurrent[bookIndex]);
+      bookshelf.booksPast.push(bookshelf.booksCurrent[bookIndex]);
 
       // Remove book from user's current books
-      bookShelf.booksCurrent.splice(bookIndex, 1);
+      bookshelf.booksCurrent.splice(bookIndex, 1);
 
-      await profile.update({ bookShelf });
-      res.json(bookShelf);
+      await profile.update({ bookshelf });
+      res.json(bookshelf);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);

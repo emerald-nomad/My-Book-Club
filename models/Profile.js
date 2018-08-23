@@ -20,7 +20,7 @@ const ProfileSchema = new Schema({
       required: true
     }
   ],
-  bookShelf: {
+  bookshelf: {
     booksPast: [
       {
         type: Schema.Types.ObjectId,

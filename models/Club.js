@@ -22,7 +22,7 @@ const ClubSchema = new Schema({
     type: String,
     required: true
   },
-  bookShelf: {
+  bookshelf: {
     booksPast: [
       {
         type: Schema.Types.ObjectId,
