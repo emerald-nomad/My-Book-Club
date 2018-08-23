@@ -141,7 +141,7 @@ router.post(
       // Get club's bookshelf
       const { bookshelf } = club;
 
-      // Check to see if book is already in database
+      // Get book by isbn
       let book = await Book.findOne({ isbn: req.body.isbn });
 
       // Check to see if book is already set as current

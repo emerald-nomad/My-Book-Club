@@ -218,11 +218,15 @@ router.post(
       // Check to see if book is already in database
       let book = await Book.findOne({ isbn: req.body.isbn });
 
+      // Add book to database if it isn't already there
       if (!book) {
         book = await new Book(req.body).save();
       }
 
+      // Add book to booksCurrent
       bookshelf.booksCurrent.push(newBook._id);
+
+      // Update Profile
       await profile.update({ bookshelf });
       res.json(bookshelf);
     } catch (error) {
@@ -253,16 +257,18 @@ router.post(
       const { bookshelf } = profile;
 
       // Check to see if book is already in data
-      const book = await Book.findOne({ isbn: req.body.isbn });
+      let book = await Book.findOne({ isbn: req.body.isbn });
 
-      if (book) {
-        bookshelf.booksFuture.push(book._id);
-        await profile.update({ bookshelf });
-      } else {
-        const newBook = await new Book(req.body).save();
-        bookshelf.booksFuture.push(newBook._id);
-        await profile.update({ bookshelf });
+      // // Add book to database if it isn't already there
+      if (!book) {
+        book = await new Book(req.body).save();
       }
+
+      // Add book to booksFuture
+      bookshelf.booksFuture.push(book._id);
+
+      // Update profile
+      await profile.update({ bookshelf });
 
       res.json(bookshelf);
     } catch (error) {
