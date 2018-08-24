@@ -1,0 +1,15 @@
+.landing {
+  position: relative;
+  background: url("./img/bookshelf.jpg") no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  margin-top: -24px;
+  margin-bottom: -50px;
+  color: white;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+a {
+  text-shadow: none;
+}
