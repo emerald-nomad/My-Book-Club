@@ -37,6 +37,18 @@ class Navigation extends Component {
                 </NavLink>
               </NavItem>
             </Nav>
+            <Nav navbar className="ml-auto">
+              <NavItem>
+                <NavLink to="/register" tag={Link}>
+                  Sign Up
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink to="/login" tag={Link}>
+                  Login
+                </NavLink>
+              </NavItem>
+            </Nav>
           </Collapse>
         </div>
       </Navbar>
