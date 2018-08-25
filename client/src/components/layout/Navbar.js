@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { logoutUser } from "../../actions/authActions";
 import {
   Navbar,
   Nav,
@@ -21,7 +24,44 @@ class Navigation extends Component {
     });
   };
 
+  onLogoutClick = e => {
+    e.preventDefault();
+    this.props.logoutUser();
+  };
+
   render() {
+    const { isAuthenticated, user } = this.props.auth;
+
+    const guestLinks = (
+      <Nav navbar className="ml-auto">
+        <NavItem>
+          <NavLink to="/register" tag={Link}>
+            Sign Up
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink to="/login" tag={Link}>
+            Login
+          </NavLink>
+        </NavItem>
+      </Nav>
+    );
+
+    const authLinks = (
+      <Nav navbar className="ml-auto">
+        <NavItem>
+          <NavLink to="/dashboard" tag={Link}>
+            Dashboard
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink onClick={this.onLogoutClick} to="" tag={Link}>
+            Logout
+          </NavLink>
+        </NavItem>
+      </Nav>
+    );
+
     return (
       <Navbar expand="sm" dark className="bg-dark mb-4">
         <div className="container">
@@ -37,18 +77,7 @@ class Navigation extends Component {
                 </NavLink>
               </NavItem>
             </Nav>
-            <Nav navbar className="ml-auto">
-              <NavItem>
-                <NavLink to="/register" tag={Link}>
-                  Sign Up
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to="/login" tag={Link}>
-                  Login
-                </NavLink>
-              </NavItem>
-            </Nav>
+            {isAuthenticated ? authLinks : guestLinks}
           </Collapse>
         </div>
       </Navbar>
@@ -56,4 +85,16 @@ class Navigation extends Component {
   }
 }
 
-export default Navigation;
+Navigation.propTypes = {
+  auth: PropTypes.object.isRequired,
+  logoutUser: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(
+  mapStateToProps,
+  { logoutUser }
+)(Navigation);
