@@ -7,6 +7,11 @@ const ProfileSchema = new Schema({
     ref: "users",
     required: true
   },
+  handle: {
+    type: String,
+    required: true,
+    max: 40
+  },
   location: {
     type: String
   },

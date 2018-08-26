@@ -22,6 +22,10 @@ const ClubSchema = new Schema({
     type: String,
     required: true
   },
+  genres: {
+    type: String,
+    required: true
+  },
   bookshelf: {
     booksPast: [
       {

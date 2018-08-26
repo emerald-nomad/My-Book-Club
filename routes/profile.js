@@ -28,7 +28,7 @@ router.post(
       return res.status(400).json(errors);
     }
 
-    const profileFields = { location: "", bio: "" };
+    const profileFields = { location: "", bio: "", handle: "", genres: "" };
 
     // Genres - Split into an Array
     if (typeof req.body.genres != "undefined") {
@@ -39,6 +39,7 @@ router.post(
 
     if (req.body.location) profileFields.location = req.body.location;
     if (req.body.bio) profileFields.bio = req.body.bio;
+    if (req.body.handle) profileFields.handle = req.body.handle;
     try {
       const profile = await Profile.findOne({ user: req.user.id });
 
@@ -73,8 +74,16 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
+      const errors = {};
+
       // Get user's profile
       let profile = await Profile.findOne({ user: req.user.id });
+
+      if (!profile) {
+        errors.noprofile = "There is no profile for this user.";
+        return res.status(404).json(errors);
+      }
+
       res.json(profile);
     } catch (error) {
       console.log(error);

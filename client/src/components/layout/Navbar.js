@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import { clearCurrentProfile } from "../../actions/profileActions";
 import {
   Navbar,
   Nav,
@@ -26,6 +27,7 @@ class Navigation extends Component {
 
   onLogoutClick = e => {
     e.preventDefault();
+    this.props.clearCurrentProfile();
     this.props.logoutUser();
   };
 
@@ -50,8 +52,8 @@ class Navigation extends Component {
     const authLinks = (
       <Nav navbar className="ml-auto">
         <NavItem>
-          <NavLink to="/dashboard" tag={Link}>
-            Dashboard
+          <NavLink to="/bookshelf" tag={Link}>
+            My Bookshelf
           </NavLink>
         </NavItem>
         <NavItem>
@@ -96,5 +98,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { logoutUser }
+  { logoutUser, clearCurrentProfile }
 )(Navigation);
