@@ -31,8 +31,8 @@ class Bookshelf extends Component {
             <p className="lead text-muted">
               Welcome <Link to={`/profile/${profile.handle}`}>{user.name}</Link>
             </p>
-            <CurrentBooks books={bookshelf.booksCurrent} />
-            <FututeBooks books={bookshelf.booksFuture} />
+            <CurrentBooks user={user} books={bookshelf.booksCurrent} />
+            <FututeBooks user={user} books={bookshelf.booksFuture} />
             <PastBooks books={bookshelf.booksPast} />
           </div>
         );

@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-const CurrentBooks = ({ books }) => {
+const CurrentBooks = ({ books, user }) => {
   let content;
 
   if (books.length > 0) {
@@ -11,10 +11,13 @@ const CurrentBooks = ({ books }) => {
     content = (
       <div>
         <p>
-          You don't have any books in your current books. Click{" "}
+          You do not have any books in your current books. Click{" "}
           <span className="font-italic">"Add a book"</span> to add one.
         </p>
-        <Link to="/books_current" className="btn btn-lg btn-info">
+        <Link
+          to={`add_book/profile/${user.id}/current`}
+          className="btn btn-lg btn-info"
+        >
           Add a book
         </Link>
       </div>

@@ -49,7 +49,7 @@ class Login extends Component {
             <Col md="8" className="m-auto">
               <h1 className="display-4 text-center">Log In</h1>
               <p className="lead text-center">Sign in to your account</p>
-              <Form onSubmit={this.onSubmit}>
+              <Form noValidate onSubmit={this.onSubmit}>
                 <TextFieldGroup
                   placeholder="Email Address"
                   name="email"

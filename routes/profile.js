@@ -77,12 +77,45 @@ router.get(
       const errors = {};
 
       // Get user's profile
-      let profile = await Profile.findOne({ user: req.user.id });
+      const profile = await Profile.findOne({ user: req.user.id });
 
       if (!profile) {
         errors.noprofile = "There is no profile for this user.";
         return res.status(404).json(errors);
       }
+
+      // Get books
+      const books = await Book.find();
+
+      let current = [];
+      let future = [];
+      let past = [];
+
+      // Populate book info for bookshelf
+
+      profile.bookshelf.booksCurrent.forEach(bookCurrent => {
+        const bookInfo = books.filter(
+          book => bookCurrent.toString() === book._id.toString()
+        )[0];
+        current.push(bookInfo);
+      });
+      profile.bookshelf.booksCurrent = current;
+
+      profile.bookshelf.booksPast.forEach(bookPast => {
+        const bookInfo = books.filter(
+          book => bookPast.toString() === book._id.toString()
+        )[0];
+        past.push(bookInfo);
+      });
+      profile.bookshelf.booksPast = past;
+
+      profile.bookshelf.booksFuture.forEach(bookFuture => {
+        const bookInfo = books.filter(
+          book => bookFuture.toString() === book._id.toString()
+        )[0];
+        future.push(bookInfo);
+      });
+      profile.bookshelf.booksFuture = future;
 
       res.json(profile);
     } catch (error) {
@@ -233,7 +266,7 @@ router.post(
       }
 
       // Add book to booksCurrent
-      bookshelf.booksCurrent.push(newBook._id);
+      bookshelf.booksCurrent.push(book._id);
 
       // Update Profile
       await profile.update({ bookshelf });
