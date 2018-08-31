@@ -13,8 +13,14 @@ import {
 export default class Book extends Component {
   onAddBookClick = () => {
     const { book, params, history } = this.props;
+    let isbn;
+
+    book.industryIdentifiers[0].type === "ISBN_13"
+      ? (isbn = book.industryIdentifiers[0].identifier)
+      : (isbn = book.industryIdentifiers[1].identifier);
+
     const bookData = {
-      isbn: book.industryIdentifiers[0].identifier,
+      isbn: isbn,
       title: book.title,
       author: book.authors[0],
       publisher: book.publisher,
@@ -23,10 +29,7 @@ export default class Book extends Component {
 
     axios
       .post(`/api/${params.type}/book_${params.time}`, bookData)
-      .then(res => {
-        console.log(res.data);
-        history.push("/bookshelf");
-      })
+      .then(res => history.push("/bookshelf"))
       .catch(err => console.log(err));
   };
 
