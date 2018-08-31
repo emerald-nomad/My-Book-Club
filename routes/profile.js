@@ -320,6 +320,37 @@ router.post(
   }
 );
 
+// @route   Post /api/profile/book_future-current/bookId
+// @desc    Move book from booksFuture to booksCurrent
+// access   Private
+router.post(
+  "/book_future-current/:bookId",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const errors = {};
+
+      // Get user's bookshelf
+      const profile = await Profile.findOne({ user: req.user.id });
+      const { bookshelf } = profile;
+
+      const bookIndex = bookshelf.booksFuture.indexOf(req.params.bookId);
+
+      // Add book to user's current books
+      bookshelf.booksCurrent.push(bookshelf.booksFuture[bookIndex]);
+
+      // Remove book from user's future books
+      bookshelf.booksFuture.splice(bookIndex, 1);
+
+      await profile.update({ bookshelf });
+      res.json(bookshelf);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
 // @route   Post /api/profile/book_past/bookId
 // @desc    Change user's current book
 // access   Private
