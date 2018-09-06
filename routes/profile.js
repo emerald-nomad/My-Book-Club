@@ -77,7 +77,9 @@ router.get(
       const errors = {};
 
       // Get user's profile
-      const profile = await Profile.findOne({ user: req.user.id });
+      const profile = await Profile.findOne({ user: req.user.id }).populate(
+        "user"
+      );
 
       if (!profile) {
         errors.noprofile = "There is no profile for this user.";
