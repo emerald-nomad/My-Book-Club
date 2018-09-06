@@ -17,6 +17,7 @@ import Bookshelf from "./components/bookshelf/Bookshelf";
 import PrivateRoute from "./components/common/PrivateRoute";
 import CreateProfile from "./components/create-profile/CreateProfile";
 import AddBook from "./components/common/addBook/AddBook";
+import MyProfile from "./components/my-profile/MyProfile";
 
 // Check for token
 if (localStorage.jwtToken) {
@@ -55,6 +56,9 @@ class App extends Component {
             <Route exact path="/login" component={Login} />
             <Switch>
               <PrivateRoute exact path="/bookshelf" component={Bookshelf} />
+            </Switch>
+            <Switch>
+              <PrivateRoute exact path="/my-profile" component={MyProfile} />
             </Switch>
             <Switch>
               <PrivateRoute
