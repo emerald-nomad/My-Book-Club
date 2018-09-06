@@ -52,8 +52,8 @@ class Navigation extends Component {
     const authLinks = (
       <Nav navbar className="ml-auto">
         <NavItem>
-          <NavLink to="/bookshelf" tag={Link}>
-            My Bookshelf
+          <NavLink to="/my-profile" tag={Link}>
+            My Profile
           </NavLink>
         </NavItem>
         <NavItem>
