@@ -7,7 +7,6 @@ import axios from "axios";
 class CurrentBooks extends Component {
   onFinishBook = e => {
     e.preventDefault();
-    const { location } = this.props;
 
     axios
       .post(`/api/profile/book_past/${e.target.id}`)
