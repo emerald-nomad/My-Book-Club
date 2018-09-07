@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Button, Card, CardHeader, CardBody, Collapse } from "reactstrap";
+import ProfileBooksTable from "./ProfileBooksTable";
 
 class ProfileBooks extends Component {
   state = {
@@ -14,6 +15,8 @@ class ProfileBooks extends Component {
   };
 
   render() {
+    const { booksCurrent, booksPast, booksFuture } = this.props.bookshelf;
+
     return (
       <Card className="rounded mb-3">
         <CardHeader className="p-0">
@@ -27,16 +30,18 @@ class ProfileBooks extends Component {
           </Button>
           <Collapse isOpen={this.state.isOpen}>
             <CardBody>
-              Anim pariatur cliche reprehenderit, enim eiusmod high life
-              accusamus terry richardson ad squid. 3 wolf moon officia aute, non
-              cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-              laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird
-              on it squid single-origin coffee nulla assumenda shoreditch et.
-              Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-              nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-              lomo. Leggings occaecat craft beer farm-to-table, raw denim
-              aesthetic synth nesciunt you probably haven't heard of them
-              accusamus labore sustainable VHS.
+              <div className="mb-3">
+                <h3 className="text-info">Current Books</h3>
+                <ProfileBooksTable books={booksCurrent} />
+              </div>
+              <div className="mb-3">
+                <h3 className="text-info">Future Books</h3>
+                <ProfileBooksTable books={booksFuture} />
+              </div>
+              <div className="mb-3">
+                <h3 className="text-info">Past Books</h3>
+                <ProfileBooksTable books={booksPast} />
+              </div>
             </CardBody>
           </Collapse>
         </CardHeader>
