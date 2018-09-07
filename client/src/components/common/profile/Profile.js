@@ -17,7 +17,7 @@ const Profile = ({ myProfile, profile, user, loading }) => {
     // Check if logged in user has profile data
     if (Object.keys(profile).length > 0) {
       content = (
-        <div>
+        <div className="pb-5">
           <ProfileHeader myProfile={myProfile} profile={profile} />
           <ProfileInfo profile={profile} />
           <ProfileBooks bookshelf={profile.bookshelf} />

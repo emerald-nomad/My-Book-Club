@@ -1,6 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Card, CardHeader, Collapse, CardBody } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Collapse,
+  CardBody,
+  Row,
+  Col
+} from "reactstrap";
 
 class ProfileInfo extends Component {
   state = {
@@ -14,6 +22,18 @@ class ProfileInfo extends Component {
   };
 
   render() {
+    const { profile } = this.props;
+
+    // Get first name
+    const firstName = profile.user.name.trim().split(" ")[0];
+
+    // Genres
+    const genres = profile.genres.map((genre, index) => (
+      <div key={index} className="p-3">
+        <i className="far fa-dot-circle" /> {genre}
+      </div>
+    ));
+
     return (
       <Card className="rounded mb-3">
         <CardHeader className="p-0">
@@ -27,16 +47,22 @@ class ProfileInfo extends Component {
           </Button>
           <Collapse isOpen={this.state.isOpen}>
             <CardBody>
-              Anim pariatur cliche reprehenderit, enim eiusmod high life
-              accusamus terry richardson ad squid. 3 wolf moon officia aute, non
-              cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-              laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird
-              on it squid single-origin coffee nulla assumenda shoreditch et.
-              Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-              nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-              lomo. Leggings occaecat craft beer farm-to-table, raw denim
-              aesthetic synth nesciunt you probably haven't heard of them
-              accusamus labore sustainable VHS.
+              <Row>
+                <Col md="12">
+                  <h3 className="text-info">Location</h3>
+                  <p className="lead">{profile.location}</p>
+                  <hr />
+                  <h3 className="text-info">{`${firstName}'s Bio`}</h3>
+                  <p className="lead">{profile.bio}</p>
+                  <hr />
+                  <h3 className="text-info">Genres</h3>
+                  <Row>
+                    <div className="d-flex flex-wrap justify-content-center align-items-center">
+                      {genres}
+                    </div>
+                  </Row>
+                </Col>
+              </Row>
             </CardBody>
           </Collapse>
         </CardHeader>
