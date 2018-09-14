@@ -31,7 +31,10 @@ class Bookshelf extends Component {
         content = (
           <div>
             <p className="lead text-muted">
-              Welcome <Link to={`/profile/${profile.handle}`}>{user.name}</Link>
+              <Link to="my-profile">
+                {" "}
+                <i className="fas fa-arrow-left" /> Back to profile
+              </Link>
             </p>
             <CurrentBooks user={user} books={booksCurrent} />
             <FututeBooks user={user} books={booksFuture} />
