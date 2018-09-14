@@ -17,7 +17,6 @@ class Bookshelf extends Component {
   render() {
     const { user } = this.props.auth;
     const { profile, loading } = this.props.profile;
-
     let content;
 
     if (profile === null || loading) {
@@ -25,15 +24,18 @@ class Bookshelf extends Component {
     } else {
       // Check if logged in user has profile data
       if (Object.keys(profile).length > 0) {
-        const { bookshelf } = profile;
+        const booksCurrent = profile.booksCurrent;
+        const booksFuture = profile.booksFuture;
+        const booksPast = profile.booksPast;
+
         content = (
           <div>
             <p className="lead text-muted">
               Welcome <Link to={`/profile/${profile.handle}`}>{user.name}</Link>
             </p>
-            <CurrentBooks user={user} books={bookshelf.booksCurrent} />
-            <FututeBooks user={user} books={bookshelf.booksFuture} />
-            <PastBooks books={bookshelf.booksPast} />
+            <CurrentBooks user={user} books={booksCurrent} />
+            <FututeBooks user={user} books={booksFuture} />
+            <PastBooks books={booksPast} />
           </div>
         );
       } else {

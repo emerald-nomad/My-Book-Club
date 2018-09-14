@@ -15,7 +15,7 @@ class ProfileBooks extends Component {
   };
 
   render() {
-    const { booksCurrent, booksPast, booksFuture } = this.props.bookshelf;
+    const { booksCurrent, booksPast, booksFuture } = this.props;
 
     return (
       <Card className="rounded mb-3">
@@ -51,7 +51,9 @@ class ProfileBooks extends Component {
 }
 
 ProfileBooks.propTypes = {
-  bookshelf: PropTypes.object.isRequired
+  booksCurrent: PropTypes.array.isRequired,
+  booksFuture: PropTypes.array.isRequired,
+  booksPast: PropTypes.array.isRequired
 };
 
 export default ProfileBooks;

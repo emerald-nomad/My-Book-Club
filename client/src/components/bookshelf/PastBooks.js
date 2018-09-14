@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { Table, Button } from "reactstrap";
+import { Table } from "reactstrap";
 
 const PastBooks = ({ books }) => {
   let content;

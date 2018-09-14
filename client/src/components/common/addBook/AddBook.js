@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from "axios";
-import keys from "../../../configs/keys";
 import {
   Link,
   Input,
@@ -19,10 +18,6 @@ export default class AddBook extends Component {
     books: [],
     query: ""
   };
-
-  componentDidMount() {
-    console.log(this.props.match.params);
-  }
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });

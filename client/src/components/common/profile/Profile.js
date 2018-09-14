@@ -20,7 +20,11 @@ const Profile = ({ myProfile, profile, user, loading }) => {
         <div className="pb-5">
           <ProfileHeader myProfile={myProfile} profile={profile} />
           <ProfileInfo profile={profile} />
-          <ProfileBooks bookshelf={profile.bookshelf} />
+          <ProfileBooks
+            booksCurrent={profile.booksCurrent}
+            booksFuture={profile.booksFuture}
+            booksPast={profile.booksPast}
+          />
           <ProfileClubs clubs={profile.clubs} />
           {myProfile ? (
             <div style={{ marginBottom: "60px" }}>
