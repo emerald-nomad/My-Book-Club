@@ -1,17 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Table, Button } from "reactstrap";
-import axios from "axios";
+import { profileCurrentToPast } from "../../actions/profileActions";
 
 class CurrentBooks extends Component {
   onFinishBook = e => {
     e.preventDefault();
 
-    axios
-      .post(`/api/profile/book_past/${e.target.id}`)
-      .then(res => window.location.reload())
-      .catch(err => console.log(err));
+    this.props.profileCurrentToPast(e.target.id);
   };
 
   render() {
@@ -93,7 +92,11 @@ class CurrentBooks extends Component {
 }
 
 CurrentBooks.propTypes = {
-  books: PropTypes.array.isRequired
+  books: PropTypes.array.isRequired,
+  profileCurrentToPast: PropTypes.func.isRequired
 };
 
-export default CurrentBooks;
+export default connect(
+  null,
+  { profileCurrentToPast }
+)(withRouter(CurrentBooks));

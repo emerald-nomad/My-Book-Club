@@ -1,17 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { Table, Button } from "reactstrap";
-import axios from "axios";
+import { profileFutureToCurrent } from "../../actions/profileActions";
 
 class FutureBooks extends Component {
   onAddToCurrent = e => {
     e.preventDefault();
 
-    axios
-      .post(`/api/profile/book_future-current/${e.target.id}`)
-      .then(res => window.location.reload())
-      .catch(err => console.log(err));
+    this.props.profileFutureToCurrent(e.target.id);
   };
 
   render() {
@@ -93,7 +92,11 @@ class FutureBooks extends Component {
 }
 
 FutureBooks.propTypes = {
-  books: PropTypes.array.isRequired
+  books: PropTypes.array.isRequired,
+  profileFutureToCurrent: PropTypes.func.isRequired
 };
 
-export default FutureBooks;
+export default connect(
+  null,
+  { profileFutureToCurrent }
+)(withRouter(FutureBooks));

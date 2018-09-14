@@ -1,5 +1,8 @@
 import React, { Component } from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { addToBookshelf } from "../../../actions/profileActions";
 import {
   Card,
   CardBody,
@@ -10,7 +13,7 @@ import {
   Button
 } from "reactstrap";
 
-export default class Book extends Component {
+class Book extends Component {
   onAddBookClick = () => {
     const { book, params, history } = this.props;
     let isbn;
@@ -27,10 +30,7 @@ export default class Book extends Component {
       imgUrl: book.imageLinks.smallThumbnail
     };
 
-    axios
-      .post(`/api/${params.type}/book_${params.time}`, bookData)
-      .then(res => history.push("/bookshelf"))
-      .catch(err => console.log(err));
+    this.props.addToBookshelf(params.type, params.time, bookData, history);
   };
 
   render() {
@@ -88,3 +88,12 @@ export default class Book extends Component {
     );
   }
 }
+
+Book.propTypes = {
+  addToBookshelf: PropTypes.func.isRequired
+};
+
+export default connect(
+  null,
+  { addToBookshelf }
+)(withRouter(Book));
