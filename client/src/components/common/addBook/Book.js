@@ -33,6 +33,11 @@ class Book extends Component {
     this.props.addToBookshelf(params.type, params.time, bookData, history);
   };
 
+  onPreviewClick = url => {
+    window.open(url, "_blank");
+    window.open(url);
+  };
+
   render() {
     const { book } = this.props;
     let shortDesc;
@@ -57,9 +62,7 @@ class Book extends Component {
           <CardBody>
             <Row className="mb-3">
               <Col md="3">
-                <a target="_blank" href={book.previewLink}>
-                  <img src={book.imageLinks.smallThumbnail} alt={book.title} />
-                </a>
+                <img src={book.imageLinks.smallThumbnail} alt={book.title} />
               </Col>
               <Col>
                 <CardTitle>{book.title}</CardTitle>
@@ -68,8 +71,12 @@ class Book extends Component {
             </Row>
             <Row className="p-2">
               <Col md="6">
-                <Button color="info" className="col-md-8">
-                  View Details
+                <Button
+                  onClick={() => this.onPreviewClick(book.previewLink)}
+                  color="info"
+                  className="col-md-8"
+                >
+                  Preview
                 </Button>
               </Col>
               <Col md="6">
