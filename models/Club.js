@@ -26,23 +26,21 @@ const ClubSchema = new Schema({
     type: String,
     required: true
   },
-  bookshelf: {
-    booksPast: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "books"
-      }
-    ],
-    booksFuture: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "books"
-      }
-    ],
-    bookCurrent: {
+  booksPast: [
+    {
       type: Schema.Types.ObjectId,
       ref: "books"
     }
+  ],
+  booksFuture: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "books"
+    }
+  ],
+  bookCurrent: {
+    type: Schema.Types.ObjectId,
+    ref: "books"
   },
   discussionPosts: [
     {

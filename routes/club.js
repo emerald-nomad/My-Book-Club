@@ -132,20 +132,22 @@ router.post(
       }
 
       // Get club by id
-      const club = await Club.findById(req.params.clubId);
+      const club = await Club.findById(req.params.clubId).populate(
+        "booksCurrent booksPast"
+      );
 
       // Check if signed in user is the admin
       if (club.admin.toString() !== req.user.id)
         return res.status(400).json({ admin: "You are not the admin." });
 
       // Get club's bookshelf
-      const { bookshelf } = club;
+      const { bookCurrent, booksPast } = club;
 
       // Get book by isbn
       let book = await Book.findOne({ isbn: req.body.isbn });
 
       // Check to see if book is already set as current
-      if (book._id.toString() === bookshelf.bookCurrent.toString()) {
+      if (book._id.toString() === bookCurrent.toString()) {
         errors.book = "Book already set as the current book.";
         return res.status(400).json(errors);
       }
@@ -155,18 +157,18 @@ router.post(
         book = await new Book(req.body).save();
       }
 
-      // If book present in bookCurrent, add
-      // that book to booksPast
-      if (bookshelf.bookCurrent) {
-        bookshelf.booksPast.push(bookshelf.bookCurrent);
+      // If there is a book already in bookCurrent,
+      // add that book to booksPast
+      if (bookCurrent) {
+        booksPast.push(bookCurrent);
       }
 
-      // Put book id into bookCurrent
-      bookshelf.bookCurrent = book._id;
+      // Add new book to bookCurrent
+      bookCurrent = book;
 
       // Update club
-      await club.update({ bookshelf });
-      res.json(bookshelf);
+      await club.update({ booksCurrent, booksPast });
+      res.json(club);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
@@ -191,14 +193,16 @@ router.post(
       }
 
       // Get club by id
-      const club = await Club.findById(req.params.clubId);
+      const club = await Club.findById(req.params.clubId).populate(
+        "booksFuture"
+      );
 
       // Check if signed in user is the admin
       if (club.admin.toString() !== req.user.id)
         return res.status(400).json({ admin: "You are not the admin." });
 
-      // Get club's bookshelf
-      const { bookshelf } = club;
+      // Get club's booksFuture
+      const { booksFuture } = club;
 
       // Check to see if book is already in database
       let book = await Book.findOne({ isbn: req.body.isbn });
@@ -209,12 +213,11 @@ router.post(
       }
 
       // Add book to booksFuture
-      bookshelf.booksFuture.push(book._id);
+      booksFuture.push(book);
 
       // Update the club
-      await club.update({ bookshelf });
-
-      res.json(bookshelf);
+      await club.update({ booksFuture });
+      res.json(club);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
