@@ -25,26 +25,24 @@ const ProfileSchema = new Schema({
       required: true
     }
   ],
-  bookshelf: {
-    booksPast: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "books"
-      }
-    ],
-    booksFuture: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "books"
-      }
-    ],
-    booksCurrent: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "books"
-      }
-    ]
-  },
+  booksPast: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "books"
+    }
+  ],
+  booksFuture: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "books"
+    }
+  ],
+  booksCurrent: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "books"
+    }
+  ],
   myClubs: [
     {
       type: Schema.Types.ObjectId,

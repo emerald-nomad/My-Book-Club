@@ -78,46 +78,13 @@ router.get(
 
       // Get user's profile
       const profile = await Profile.findOne({ user: req.user.id }).populate(
-        "user"
+        "user booksPast booksFuture booksCurrent"
       );
 
       if (!profile) {
         errors.noprofile = "There is no profile for this user.";
         return res.status(404).json(errors);
       }
-
-      // Get books
-      const books = await Book.find();
-
-      let current = [];
-      let future = [];
-      let past = [];
-
-      // Populate book info for bookshelf
-
-      profile.bookshelf.booksCurrent.forEach(bookCurrent => {
-        const bookInfo = books.filter(
-          book => bookCurrent.toString() === book._id.toString()
-        )[0];
-        current.push(bookInfo);
-      });
-      profile.bookshelf.booksCurrent = current;
-
-      profile.bookshelf.booksPast.forEach(bookPast => {
-        const bookInfo = books.filter(
-          book => bookPast.toString() === book._id.toString()
-        )[0];
-        past.push(bookInfo);
-      });
-      profile.bookshelf.booksPast = past;
-
-      profile.bookshelf.booksFuture.forEach(bookFuture => {
-        const bookInfo = books.filter(
-          book => bookFuture.toString() === book._id.toString()
-        )[0];
-        future.push(bookInfo);
-      });
-      profile.bookshelf.booksFuture = future;
 
       res.json(profile);
     } catch (error) {
@@ -254,10 +221,11 @@ router.post(
         return res.status(400).json(errors);
       }
 
-      // Get user's bookshelf
-      const profile = await Profile.findOne({ user: req.user.id });
-
-      const { bookshelf } = profile;
+      // Get user's bookCurrent
+      const profile = await Profile.findOne({ user: req.user.id }).populate(
+        "booksCurrent"
+      );
+      const { booksCurrent } = profile;
 
       // Check to see if book is already in database
       let book = await Book.findOne({ isbn: req.body.isbn });
@@ -267,12 +235,18 @@ router.post(
         book = await new Book(req.body).save();
       }
 
+      // Check to see if book is already in booksCurrent
+      const books = booksCurrent.map(book => book.toString());
+      if (books.includes(book._id.toString())) {
+        return res.json(profile);
+      }
+
       // Add book to booksCurrent
-      bookshelf.booksCurrent.push(book._id);
+      booksCurrent.push(book);
 
       // Update Profile
-      await profile.update({ bookshelf });
-      res.json(bookshelf);
+      await profile.update({ booksCurrent });
+      res.json(profile);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
@@ -296,9 +270,11 @@ router.post(
         return res.status(400).json(errors);
       }
 
-      // Get user's bookshelf
-      const profile = await Profile.findOne({ user: req.user.id });
-      const { bookshelf } = profile;
+      // Get user's booksFuture
+      const profile = await Profile.findOne({ user: req.user.id }).populate(
+        "booksFuture"
+      );
+      const { booksFuture } = profile;
 
       // Check to see if book is already in data
       let book = await Book.findOne({ isbn: req.body.isbn });
@@ -308,13 +284,18 @@ router.post(
         book = await new Book(req.body).save();
       }
 
+      // Check to see if book is already in booksFuture
+      const books = booksFuture.map(book => book.toString());
+      if (books.includes(book._id.toString())) {
+        return res.json(bookshelf);
+      }
+
       // Add book to booksFuture
-      bookshelf.booksFuture.push(book._id);
+      booksFuture.push(book);
 
       // Update profile
-      await profile.update({ bookshelf });
-
-      res.json(bookshelf);
+      await profile.update({ booksFuture });
+      res.json(profile);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
@@ -332,20 +313,30 @@ router.post(
     try {
       const errors = {};
 
-      // Get user's bookshelf
-      const profile = await Profile.findOne({ user: req.user.id });
-      const { bookshelf } = profile;
+      // Get user's booksCurrent & booksFuture
+      const profile = await Profile.findOne({ user: req.user.id }).populate(
+        "booksCurrent booksFuture booksPast"
+      );
+      const { booksCurrent, booksFuture } = profile;
 
-      const bookIndex = bookshelf.booksFuture.indexOf(req.params.bookId);
+      // Find index of book in booksFuture
+      const futures = booksFuture.map(book => book._id.toString());
+      const bookIndex = futures.indexOf(req.params.bookId);
 
-      // Add book to user's current books
-      bookshelf.booksCurrent.push(bookshelf.booksFuture[bookIndex]);
+      // Get indexed book
+      const book = booksFuture[bookIndex];
 
       // Remove book from user's future books
-      bookshelf.booksFuture.splice(bookIndex, 1);
+      booksFuture.splice(bookIndex, 1);
 
-      await profile.update({ bookshelf });
-      res.json(bookshelf);
+      // Check to see if book is already in booksCurrent
+      const current = booksCurrent.map(book => book.toString());
+      if (!current.includes(book._id.toString())) {
+        booksCurrent.push(book);
+      }
+
+      await profile.update({ booksCurrent, booksFuture });
+      res.json(profile);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
@@ -364,26 +355,37 @@ router.post(
       const errors = {};
 
       // Get user's bookshelf
-      const profile = await Profile.findOne({ user: req.user.id });
-      const { bookshelf } = profile;
+      const profile = await Profile.findOne({
+        user: req.user.id
+      }).populate("booksCurrent booksFuture booksPast");
+      const { booksCurrent, booksFuture, booksPast } = profile;
 
       // Change book id's from objects to strings
-      const books = bookshelf.booksCurrent.map(book => book.toString());
-      if (!books.includes(req.params.bookId)) {
+      const current = booksCurrent.map(book => book.toString());
+      if (!current.includes(req.params.bookId)) {
         errors.book = "You're not currently reading this book.";
         return res.status(400).json(errors);
       }
 
-      const bookIndex = books.indexOf(req.params.bookId);
+      // Find index of book in booksCurrent
+      const bookIndex = current.indexOf(req.params.bookId);
 
-      // Add book to user's books read
-      bookshelf.booksPast.push(bookshelf.booksCurrent[bookIndex]);
+      // Get indexed book
+      const book = booksCurrent[bookIndex];
 
       // Remove book from user's current books
-      bookshelf.booksCurrent.splice(bookIndex, 1);
+      booksCurrent.splice(bookIndex, 1);
 
-      await profile.update({ bookshelf });
-      res.json(bookshelf);
+      // Check to see if book is already in booksPast
+      const past = booksPast.map(book => book.toString());
+      if (!past.includes(book._id.toString())) {
+        // Add book to user's books read
+        booksPast.push(book);
+      }
+
+      // Update profile
+      await profile.update({ booksCurrent, booksPast });
+      res.json(profile);
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
