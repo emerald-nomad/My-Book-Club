@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { createProfile } from "../../actions/profileActions";
+import { postToProfile, getCurrentProfile } from "../../actions/profileActions";
 import { Container, Row, Col, Form, Input } from "reactstrap";
 import TextFieldGroup from "../common/TextFieldGroup";
 import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import CheckboxGroup from "../common/CheckboxGroup";
 
-class CreateProfile extends Component {
+class CreateEditProfile extends Component {
   state = {
     handle: "",
     location: "",
@@ -17,7 +17,24 @@ class CreateProfile extends Component {
     errors: {}
   };
 
+  componentDidMount() {
+    this.props.getCurrentProfile();
+    console.log("Component Mounted");
+  }
+
   componentDidUpdate(prevProps) {
+    const { profile } = this.props.profile;
+    const prevProfile = prevProps.profile.profile;
+
+    if (prevProfile !== profile && Object.keys(profile).length > 0) {
+      this.setState({
+        handle: profile.handle,
+        location: profile.location,
+        bio: profile.bio,
+        genres: profile.genres
+      });
+    }
+
     if (prevProps.errors !== this.props.errors) {
       this.setState({ errors: this.props.errors });
     }
@@ -33,7 +50,7 @@ class CreateProfile extends Component {
       genres: this.state.genres.join(",")
     };
 
-    this.props.createProfile(profileData, this.props.history);
+    this.props.postToProfile(profileData, this.props.history);
   };
 
   onTextChange = e => {
@@ -58,6 +75,9 @@ class CreateProfile extends Component {
   render() {
     const { errors } = this.state;
 
+    let genres;
+    this.state.genres ? (genres = this.state.genres) : (genres = []);
+
     // Options for genre
     const options = [
       "Fiction",
@@ -76,7 +96,7 @@ class CreateProfile extends Component {
         <Container>
           <Row>
             <Col md="8" className="m-auto">
-              <h1 className="display-4 text-center">Create Your Profile</h1>
+              <h1 className="display-4 text-center">Profile</h1>
               <small className="d-block pb-3">* = required fields</small>
               <Form onSubmit={this.onSubmit}>
                 <TextFieldGroup
@@ -107,6 +127,7 @@ class CreateProfile extends Component {
                   onChange={this.onCheckboxChange}
                   options={options}
                   header="Genres"
+                  genres={genres}
                 />
                 <Input
                   type="submit"
@@ -127,12 +148,14 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-CreateProfile.propTypes = {
+CreateEditProfile.propTypes = {
   profile: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
+  postToProfile: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired
 };
 
 export default connect(
   mapStateToProps,
-  { createProfile }
-)(withRouter(CreateProfile));
+  { postToProfile, getCurrentProfile }
+)(withRouter(CreateEditProfile));
