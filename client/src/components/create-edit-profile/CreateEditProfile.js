@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { postToProfile, getCurrentProfile } from "../../actions/profileActions";
 import { Container, Row, Col, Form, Input } from "reactstrap";
+import { Link } from "react-router-dom";
 import TextFieldGroup from "../common/TextFieldGroup";
 import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import CheckboxGroup from "../common/CheckboxGroup";
@@ -97,6 +98,10 @@ class CreateEditProfile extends Component {
           <Row>
             <Col md="8" className="m-auto">
               <h1 className="display-4 text-center">Profile</h1>
+              <Link to="my-profile">
+                {" "}
+                <i className="fas fa-arrow-left" /> Back to profile
+              </Link>
               <small className="d-block pb-3">* = required fields</small>
               <Form onSubmit={this.onSubmit}>
                 <TextFieldGroup
