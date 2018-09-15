@@ -361,7 +361,7 @@ router.post(
       const { booksCurrent, booksFuture, booksPast } = profile;
 
       // Change book id's from objects to strings
-      const current = booksCurrent.map(book => book.toString());
+      const current = booksCurrent.map(book => book._id.toString());
       if (!current.includes(req.params.bookId)) {
         errors.book = "You're not currently reading this book.";
         return res.status(400).json(errors);
