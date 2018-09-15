@@ -41,11 +41,21 @@ router.post(
     if (req.body.bio) profileFields.bio = req.body.bio;
     if (req.body.handle) profileFields.handle = req.body.handle;
     try {
+      // Check if handle exists
+      const handle = await Profile.findOne({ handle: profileFields.handle });
+
+      // Find profile by user Id
       const profile = await Profile.findOne({ user: req.user.id });
+
+      // Check if handle exists & is not equal to current user's handle
+      if (handle && handle.handle !== profile.handle) {
+        // If handle exists return an error
+        errors.handle = "That handle already exists";
+        return res.status(400).json(errors);
+      }
 
       if (profile) {
         // Update
-
         const updatedProfile = await Profile.findOneAndUpdate(
           { user: req.user.id },
           { $set: profileFields },
