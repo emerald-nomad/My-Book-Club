@@ -16,8 +16,8 @@ export const getCurrentProfile = () => dispatch => {
     .catch(err => dispatch({ type: GET_PROFILE, payload: {} }));
 };
 
-// Create Profile
-export const createProfile = (profileData, history) => dispatch => {
+// Create or Edit Profile
+export const postToProfile = (profileData, history) => dispatch => {
   axios
     .post("/api/profile", profileData)
     .then(res => history.push("/my-profile"))

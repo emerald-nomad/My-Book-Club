@@ -2,11 +2,17 @@ import React from "react";
 import PropTypes from "prop-types";
 import { FormGroup, Label, Input, Row, Col } from "reactstrap";
 
-const CheckboxGroup = ({ onChange, options, header }) => {
+const CheckboxGroup = ({ onChange, options, header, genres }) => {
   const boxes = options.map(option => (
     <Col key={option} sm="12" className="mb-2">
       <Label checked={false} onChange={onChange} check>
-        <Input type="checkbox" name={option} value={option} /> {option}
+        <Input
+          type="checkbox"
+          checked={genres.includes(option)}
+          name={option}
+          value={option}
+        />{" "}
+        {option}
       </Label>
     </Col>
   ));

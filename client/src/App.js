@@ -15,7 +15,7 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Bookshelf from "./components/bookshelf/Bookshelf";
 import PrivateRoute from "./components/common/PrivateRoute";
-import CreateProfile from "./components/create-profile/CreateProfile";
+import CreateEditProfile from "./components/create-edit-profile/CreateEditProfile";
 import AddBook from "./components/common/addBook/AddBook";
 import MyProfile from "./components/my-profile/MyProfile";
 
@@ -63,8 +63,15 @@ class App extends Component {
             <Switch>
               <PrivateRoute
                 exact
+                path="/edit-profile"
+                component={CreateEditProfile}
+              />
+            </Switch>
+            <Switch>
+              <PrivateRoute
+                exact
                 path="/create-profile"
-                component={CreateProfile}
+                component={CreateEditProfile}
               />
             </Switch>
             <Switch>
