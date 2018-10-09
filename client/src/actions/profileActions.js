@@ -48,6 +48,14 @@ export const profileCurrentToPast = bookId => dispatch => {
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };
 
+// Add club to user's profile
+export const addClubToProfile = (clubId, history) => dispatch => {
+  axios
+    .post("/api/profile/club", { clubId })
+    .then(res => history.push("/my-profile"))
+    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+};
+
 // Set profile loading
 export const setProfileLoading = () => {
   return {
