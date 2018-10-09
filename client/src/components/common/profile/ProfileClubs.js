@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import ProfileClubsTable from "./ProfileClubsTable";
 import { Button, Card, CardHeader, CardBody, Collapse } from "reactstrap";
 
 class ProfileClubs extends Component {
@@ -14,6 +15,7 @@ class ProfileClubs extends Component {
   };
 
   render() {
+    const { clubs, myClubs } = this.props;
     return (
       <Card className="rounded mb-3">
         <CardHeader className="p-0">
@@ -27,16 +29,14 @@ class ProfileClubs extends Component {
           </Button>
           <Collapse isOpen={this.state.isOpen}>
             <CardBody>
-              Anim pariatur cliche reprehenderit, enim eiusmod high life
-              accusamus terry richardson ad squid. 3 wolf moon officia aute, non
-              cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-              laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird
-              on it squid single-origin coffee nulla assumenda shoreditch et.
-              Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-              nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
-              lomo. Leggings occaecat craft beer farm-to-table, raw denim
-              aesthetic synth nesciunt you probably haven't heard of them
-              accusamus labore sustainable VHS.
+              <div className="mb-3">
+                <h3 className="text-info">Your Clubs</h3>
+                <ProfileClubsTable clubs={myClubs} />
+              </div>
+              <div className="mb-3">
+                <h3 className="text-info">Clubs Joined</h3>
+                <ProfileClubsTable clubs={clubs} />
+              </div>
             </CardBody>
           </Collapse>
         </CardHeader>
@@ -46,7 +46,7 @@ class ProfileClubs extends Component {
 }
 
 ProfileClubs.propTypes = {
-  clubs: PropTypes.object.isRequired
+  clubs: PropTypes.array.isRequired
 };
 
 export default ProfileClubs;

@@ -25,7 +25,7 @@ const Profile = ({ myProfile, profile, user, loading }) => {
             booksFuture={profile.booksFuture}
             booksPast={profile.booksPast}
           />
-          <ProfileClubs clubs={profile.clubs} />
+          <ProfileClubs clubs={profile.clubs} myClubs={profile.myClubs} />
           {myProfile ? (
             <div style={{ marginBottom: "60px" }}>
               <button className="btn btn-danger">Delete My Account</button>
