@@ -88,7 +88,7 @@ router.get(
 
       // Get user's profile
       const profile = await Profile.findOne({ user: req.user.id }).populate(
-        "user booksPast booksFuture booksCurrent"
+        "user booksPast booksFuture booksCurrent clubs myClubs"
       );
 
       if (!profile) {
