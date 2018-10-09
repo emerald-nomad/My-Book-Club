@@ -20,7 +20,6 @@ class CreateEditProfile extends Component {
 
   componentDidMount() {
     this.props.getCurrentProfile();
-    console.log("Component Mounted");
   }
 
   componentDidUpdate(prevProps) {

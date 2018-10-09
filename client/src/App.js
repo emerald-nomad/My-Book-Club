@@ -18,7 +18,9 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import CreateEditProfile from "./components/create-edit-profile/CreateEditProfile";
 import AddBook from "./components/common/addBook/AddBook";
 import MyProfile from "./components/my-profile/MyProfile";
+import Clubs from "./components/clubs/Clubs";
 import MyClubs from "./components/my-clubs/MyClubs";
+import CreateClub from "./components/create-club/CreateClub";
 
 // Check for token
 if (localStorage.jwtToken) {
@@ -55,6 +57,7 @@ class App extends Component {
             <Route exact path="/" component={Landing} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
+            <Route exact path="/clubs" component={Clubs} />
             <Switch>
               <PrivateRoute exact path="/bookshelf" component={Bookshelf} />
             </Switch>
@@ -74,6 +77,9 @@ class App extends Component {
                 path="/create-profile"
                 component={CreateEditProfile}
               />
+            </Switch>
+            <Switch>
+              <PrivateRoute exact path="/create-club" component={CreateClub} />
             </Switch>
             <Switch>
               <PrivateRoute exact path="/my-clubs" component={MyClubs} />
