@@ -24,7 +24,7 @@ class MyClubs extends Component {
       // Check if logged in user has profile data
       if (Object.keys(profile).length > 0) {
         const { clubs, myClubs } = profile;
-        console.log(clubs, myClubs);
+
         content = (
           <div>
             <p className="lead text-muted">

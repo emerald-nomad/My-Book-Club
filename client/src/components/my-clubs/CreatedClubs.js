@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import { Table, Button } from "reactstrap";
 
 class CreatedClubs extends Component {
   render() {
@@ -9,6 +10,28 @@ class CreatedClubs extends Component {
     let content;
 
     if (clubs.length > 0) {
+      const clubList = clubs.map(club => (
+        <tr key={club._id}>
+          <td className="align-middle text-center">{club.name}</td>
+          <td className="align-middle text-center">{club.description}</td>
+        </tr>
+      ));
+      content = (
+        <div>
+          <Link to="create-club" className="btn btn-lg btn-info mb-3">
+            Start a club
+          </Link>
+          <Table hover>
+            <thead>
+              <tr>
+                <th className="text-center">Name</th>
+                <th className="text-center">Description</th>
+              </tr>
+            </thead>
+            <tbody>{clubList}</tbody>
+          </Table>
+        </div>
+      );
     } else {
       content = (
         <div>
@@ -16,7 +39,7 @@ class CreatedClubs extends Component {
             You have not started any clubs. Click{" "}
             <span className="font-italic">"Start a club"</span> to start one.
           </p>
-          <Link to="#" className="btn btn-lg btn-info">
+          <Link to="create-club" className="btn btn-lg btn-info">
             Start a club
           </Link>
         </div>
