@@ -28,6 +28,20 @@ router.get("/all", async (req, res) => {
   }
 });
 
+// @route   Get /api/club/clubId
+// @desc    Get club by id
+// access   Public
+router.get("/:clubId", async (req, res) => {
+  try {
+    const club = await Club.findById(req.params.clubId);
+
+    res.json(club);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
 // @route   Post /api/club
 // @desc    Create new club
 // access   Private
