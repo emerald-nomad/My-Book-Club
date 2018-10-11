@@ -1,4 +1,4 @@
-import { GET_CLUBS, CLUBS_LOADING } from "../actions/types";
+import { GET_CLUBS, CLUBS_LOADING, GET_CLUB } from "../actions/types";
 
 const initialState = {
   club: null,
@@ -12,6 +12,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: true
+      };
+    case GET_CLUB:
+      return {
+        ...state,
+        club: action.payload,
+        loading: false
       };
     case GET_CLUBS:
       return {
