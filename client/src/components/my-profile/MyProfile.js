@@ -12,6 +12,7 @@ class MyProfile extends Component {
   render() {
     return (
       <Profile
+        history={this.props.history}
         myProfile={true}
         user={this.props.auth.user}
         profile={this.props.profile.profile}

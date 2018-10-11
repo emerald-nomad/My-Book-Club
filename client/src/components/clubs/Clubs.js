@@ -46,7 +46,9 @@ class Clubs extends Component {
               <hr />
               <Row>
                 <Col md="6" className="mx-auto">
-                  <Button>Go to club</Button>
+                  <Link to={`/club/${club._id}`}>
+                    <Button>Go to club</Button>
+                  </Link>
                 </Col>
                 {isAuthenticated &&
                 club.admin != user.id &&

@@ -31,11 +31,14 @@ class ProfileClubs extends Component {
             <CardBody>
               <div className="mb-3">
                 <h3 className="text-info">Your Clubs</h3>
-                <ProfileClubsTable clubs={myClubs} />
+                <ProfileClubsTable
+                  history={this.props.history}
+                  clubs={myClubs}
+                />
               </div>
               <div className="mb-3">
                 <h3 className="text-info">Clubs Joined</h3>
-                <ProfileClubsTable clubs={clubs} />
+                <ProfileClubsTable history={this.props.history} clubs={clubs} />
               </div>
             </CardBody>
           </Collapse>

@@ -8,7 +8,7 @@ import ProfileInfo from "./ProfileInfo";
 import ProfileBooks from "./ProfileBooks";
 import ProfileClubs from "./ProfileClubs";
 
-const Profile = ({ myProfile, profile, user, loading }) => {
+const Profile = ({ myProfile, profile, user, loading, history }) => {
   let content;
 
   if (profile === null || loading) {
@@ -25,7 +25,11 @@ const Profile = ({ myProfile, profile, user, loading }) => {
             booksFuture={profile.booksFuture}
             booksPast={profile.booksPast}
           />
-          <ProfileClubs clubs={profile.clubs} myClubs={profile.myClubs} />
+          <ProfileClubs
+            history={history}
+            clubs={profile.clubs}
+            myClubs={profile.myClubs}
+          />
           {myProfile ? (
             <div style={{ marginBottom: "60px" }}>
               <button className="btn btn-danger">Delete My Account</button>
