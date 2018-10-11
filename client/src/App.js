@@ -18,6 +18,7 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import CreateEditProfile from "./components/create-edit-profile/CreateEditProfile";
 import AddBook from "./components/common/addBook/AddBook";
 import MyProfile from "./components/my-profile/MyProfile";
+import Club from "./components/club/Club";
 import Clubs from "./components/clubs/Clubs";
 import MyClubs from "./components/my-clubs/MyClubs";
 import CreateClub from "./components/create-club/CreateClub";
@@ -58,6 +59,7 @@ class App extends Component {
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/clubs" component={Clubs} />
+            <Route exact path="/club/:clubId" component={Club} />
             <Switch>
               <PrivateRoute exact path="/bookshelf" component={Bookshelf} />
             </Switch>
