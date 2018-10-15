@@ -191,7 +191,7 @@ router.post(
 );
 
 // @route   Post /api/club/clubId/book_future
-// @desc    Change club's current book
+// @desc    Add book to club's booksFuture
 // access   Private
 router.post(
   "/:clubId/book_future",

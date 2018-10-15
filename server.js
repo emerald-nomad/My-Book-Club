@@ -7,6 +7,7 @@ const passport = require("passport");
 const user = require("./routes/user");
 const profile = require("./routes/profile");
 const club = require("./routes/club");
+const posts = require("./routes/posts");
 
 const app = express();
 
@@ -36,6 +37,7 @@ require("./config/passport")(passport);
 app.use("/api/user", user);
 app.use("/api/profile", profile);
 app.use("/api/club", club);
+app.use("/api/club/post", posts);
 
 const port = process.env.PORT || 5000;
 
