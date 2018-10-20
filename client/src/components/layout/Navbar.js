@@ -29,6 +29,9 @@ class Navigation extends Component {
     e.preventDefault();
     this.props.clearCurrentProfile();
     this.props.logoutUser();
+
+    // Redirect to login
+    window.location.href = "/login";
   };
 
   render() {
