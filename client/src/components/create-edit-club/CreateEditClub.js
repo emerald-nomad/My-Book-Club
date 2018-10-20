@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
-import { createClub } from "../../actions/clubActions";
+import { createClub, getClub } from "../../actions/clubActions";
 import { Container, Row, Col, Form, Input } from "reactstrap";
 import { Link } from "react-router-dom";
 import TextFieldGroup from "../common/TextFieldGroup";
 import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import CheckboxGroup from "../common/CheckboxGroup";
 
-class CreateClub extends Component {
+class CreateEditClub extends Component {
   state = {
     name: "",
     description: "",
@@ -17,7 +17,23 @@ class CreateClub extends Component {
     errors: {}
   };
 
+  componentDidMount() {
+    const { clubId } = this.props.match.params;
+    if (clubId) this.props.getClub(clubId);
+  }
+
   componentDidUpdate(prevProps) {
+    const { club } = this.props.club;
+    const prevClub = prevProps.club.club;
+
+    if (prevClub !== club && Object.keys(club).length > 0) {
+      this.setState({
+        name: club.name,
+        description: club.description,
+        genres: club.genres
+      });
+    }
+
     if (prevProps.errors !== this.props.errors) {
       this.setState({ errors: this.props.errors });
     }
@@ -57,7 +73,9 @@ class CreateClub extends Component {
   };
 
   render() {
-    const { errors, genres } = this.state;
+    const { errors } = this.state;
+    let genres;
+    this.state.genres ? (genres = this.state.genres) : (genres = []);
 
     // Options for genre
     const options = [
@@ -78,10 +96,17 @@ class CreateClub extends Component {
           <Row>
             <Col md="8" className="m-auto">
               <h1 className="display-4 text-center">Club</h1>
-              <Link to="my-clubs">
-                {" "}
-                <i className="fas fa-arrow-left" /> Back to My Clubs
-              </Link>
+              {this.props.match.params.clubId ? (
+                <Link to={`/club/${this.props.match.params.clubId}`}>
+                  {" "}
+                  <i className="fas fa-arrow-left" /> Back to club
+                </Link>
+              ) : (
+                <Link to="my-clubs">
+                  {" "}
+                  <i className="fas fa-arrow-left" /> Back to My Clubs
+                </Link>
+              )}
               <small className="d-block pb-3">* = required fields</small>
               <Form onSubmit={this.onSubmit}>
                 <TextFieldGroup
@@ -120,16 +145,17 @@ class CreateClub extends Component {
   }
 }
 
-CreateClub.propTypes = {
+CreateEditClub.propTypes = {
   errors: PropTypes.object.isRequired,
   createClub: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  errors: state.errors
+  errors: state.errors,
+  club: state.club
 });
 
 export default connect(
   mapStateToProps,
-  { createClub }
-)(withRouter(CreateClub));
+  { createClub, getClub }
+)(withRouter(CreateEditClub));
