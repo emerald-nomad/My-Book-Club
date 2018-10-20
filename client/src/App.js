@@ -14,6 +14,7 @@ import Footer from "./components/layout/Footer";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Bookshelf from "./components/bookshelf/Bookshelf";
+import ClubBookshelf from "./components/club-bookshelf/ClubBookshelf";
 import PrivateRoute from "./components/common/PrivateRoute";
 import CreateEditProfile from "./components/create-edit-profile/CreateEditProfile";
 import AddBook from "./components/common/addBook/AddBook";
@@ -21,7 +22,7 @@ import MyProfile from "./components/my-profile/MyProfile";
 import Club from "./components/club/Club";
 import Clubs from "./components/clubs/Clubs";
 import MyClubs from "./components/my-clubs/MyClubs";
-import CreateClub from "./components/create-club/CreateClub";
+import CreateEditClub from "./components/create-edit-club/CreateEditClub";
 
 // Check for token
 if (localStorage.jwtToken) {
@@ -61,6 +62,13 @@ class App extends Component {
             <Route exact path="/clubs" component={Clubs} />
             <Route exact path="/club/:clubId" component={Club} />
             <Switch>
+              <PrivateRoute
+                exact
+                path="/bookshelf/:clubId"
+                component={ClubBookshelf}
+              />
+            </Switch>
+            <Switch>
               <PrivateRoute exact path="/bookshelf" component={Bookshelf} />
             </Switch>
             <Switch>
@@ -81,8 +89,20 @@ class App extends Component {
               />
             </Switch>
             <Switch>
-              <PrivateRoute exact path="/create-club" component={CreateClub} />
+              <PrivateRoute
+                exact
+                path="/create-club"
+                component={CreateEditClub}
+              />
             </Switch>
+            <Switch>
+              <PrivateRoute
+                exact
+                path="/edit-club/:clubId"
+                component={CreateEditClub}
+              />
+            </Switch>
+
             <Switch>
               <PrivateRoute exact path="/my-clubs" component={MyClubs} />
             </Switch>
