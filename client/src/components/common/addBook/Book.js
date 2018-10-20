@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { addToBookshelf } from "../../../actions/profileActions";
+import { addToClubBookshelf } from "../../../actions/clubActions";
 import {
   Card,
   CardBody,
@@ -30,7 +31,17 @@ class Book extends Component {
       imgUrl: book.imageLinks.smallThumbnail
     };
 
-    this.props.addToBookshelf(params.type, params.time, bookData, history);
+    if (params.type === "profile") {
+      this.props.addToBookshelf(params.type, params.time, bookData, history);
+    } else if (params.type === "club") {
+      this.props.addToClubBookshelf(
+        params.type,
+        params.id,
+        params.time,
+        bookData,
+        history
+      );
+    }
   };
 
   onPreviewClick = url => {
@@ -102,5 +113,5 @@ Book.propTypes = {
 
 export default connect(
   null,
-  { addToBookshelf }
+  { addToBookshelf, addToClubBookshelf }
 )(withRouter(Book));
