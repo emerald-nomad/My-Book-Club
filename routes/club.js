@@ -33,7 +33,9 @@ router.get("/all", async (req, res) => {
 // access   Public
 router.get("/:clubId", async (req, res) => {
   try {
-    const club = await Club.findById(req.params.clubId);
+    const club = await Club.findById(req.params.clubId).populate(
+      "bookCurrent booksPast booksFuture"
+    );
 
     res.json(club);
   } catch (error) {
@@ -66,8 +68,19 @@ router.post(
         return res.status(400).json(errors);
       }
 
+      const profileFields = { name: "", description: "", genres: "" };
+
+      // Genres - Split into an Array
+      if (typeof req.body.genres != "undefined") {
+        profileFields.genres = req.body.genres.split(",");
+      }
+
+      if (req.body.name) profileFields.name = req.body.name;
+      if (req.body.description)
+        profileFields.description = req.body.description;
+
       // Create new club
-      const newClub = new Club(req.body);
+      const newClub = new Club(profileFields);
       // Making signed in user admin of club
       newClub.admin = req.user.id;
 
@@ -147,7 +160,7 @@ router.post(
 
       // Get club by id
       const club = await Club.findById(req.params.clubId).populate(
-        "booksCurrent booksPast"
+        "bookCurrent booksPast"
       );
 
       // Check if signed in user is the admin
@@ -155,13 +168,19 @@ router.post(
         return res.status(400).json({ admin: "You are not the admin." });
 
       // Get club's bookshelf
-      const { bookCurrent, booksPast } = club;
+      const { booksPast } = club;
+      let bookCurrent = club.bookCurrent;
 
       // Get book by isbn
       let book = await Book.findOne({ isbn: req.body.isbn });
 
+      // Add book to database if it isn't already there
+      if (!book) {
+        book = await new Book(req.body).save();
+      }
+
       // Check to see if book is already set as current
-      if (book._id.toString() === bookCurrent.toString()) {
+      if (bookCurrent && book._id.toString() === bookCurrent.toString()) {
         errors.book = "Book already set as the current book.";
         return res.status(400).json(errors);
       }
@@ -181,7 +200,52 @@ router.post(
       bookCurrent = book;
 
       // Update club
-      await club.update({ booksCurrent, booksPast });
+      await club.update({ bookCurrent, booksPast });
+      res.json(club);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+// @route   Post /api/club/clubId/book_future-current/bookId
+// @desc    Change club's current book
+// access   Private
+router.post(
+  "/:clubId/book_future-current/:bookId",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      // Get club by id
+      const club = await Club.findById(req.params.clubId).populate(
+        "bookCurrent booksFuture booksPast"
+      );
+
+      const { booksFuture } = club;
+      let bookCurrent = club.bookCurrent;
+
+      // Find index of book in booksFuture
+      const bookIndex = booksFuture
+        .map(book => book._id.toString())
+        .indexOf(req.params.bookId);
+
+      // Get indexed book
+      const book = booksFuture[bookIndex];
+
+      // Remove book from booksFuture
+      booksFuture.splice(bookIndex, 1);
+
+      // check to see if book is already in bookCurrent
+      if (bookCurrent !== book._id) {
+        bookCurrent = book;
+        club.bookCurrent = book;
+      }
+
+      // Update club
+      await club.update({ bookCurrent, booksFuture });
+
+      // Return updated club
       res.json(club);
     } catch (error) {
       console.log(error);
@@ -231,6 +295,57 @@ router.post(
 
       // Update the club
       await club.update({ booksFuture });
+      res.json(club);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+// @route   POST /api/club/clubId/book_past/bookId
+// @desc    Move current book to booksPast
+// access   Private
+router.post(
+  "/:clubId/book_past/:bookId",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const errors = {};
+
+      // Get club by id
+      const club = await Club.findById(req.params.clubId).populate(
+        "bookCurrent bookFuture booksPast"
+      );
+      const { booksPast } = club;
+      let bookCurrent = club.bookCurrent;
+
+      // change book id's from objects to strings
+      const current = bookCurrent._id.toString();
+
+      // Check to see if club is currently reading book
+      if (current !== req.params.bookId) {
+        errors.book = "Club not currently reading this book";
+        return res.status(400).json(errors);
+      }
+
+      // Check to see if book is already in booksPast
+      const past = booksPast.map(book => book._id.toString());
+      console.log(past.includes(bookCurrent._id.toString()));
+      console.log();
+      if (!past.includes(bookCurrent._id.toString())) {
+        // Add book to club's books read
+        booksPast.push(bookCurrent);
+      }
+
+      // Remove book from bookCurrent
+      bookCurrent = null;
+      club.bookCurrent = null;
+
+      // Update club
+      await club.update({ bookCurrent, booksPast });
+
+      // Return update club
       res.json(club);
     } catch (error) {
       console.log(error);
