@@ -4,7 +4,8 @@ import {
   GET_PROFILE,
   GET_ERRORS,
   CLEAR_CURRENT_PROFILE,
-  PROFILE_UPDATED
+  PROFILE_UPDATED,
+  CLEAR_ERRORS
 } from "./types";
 
 // Get current profile
@@ -20,7 +21,10 @@ export const getCurrentProfile = () => dispatch => {
 export const postToProfile = (profileData, history) => dispatch => {
   axios
     .post("/api/profile", profileData)
-    .then(res => history.push("/my-profile"))
+    .then(res => {
+      dispatch({ type: CLEAR_ERRORS });
+      history.push("/my-profile");
+    })
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };
 
