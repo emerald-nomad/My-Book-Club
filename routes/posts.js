@@ -13,6 +13,7 @@ const Profile = require("../models/Profile");
 
 // Load Validation
 const validatePostInput = require("../validation/posts");
+const validateCommentInput = require("../validation/comment");
 
 // @route   POST api/club/post/:clubId
 // @desc    Create post
@@ -186,7 +187,7 @@ router.post(
   "/:clubId/:postId/comment",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    const { errors, isValid } = validatePostInput(req.body);
+    const { errors, isValid } = validateCommentInput(req.body);
 
     // Check Validation
     if (!isValid) {
@@ -215,7 +216,7 @@ router.post(
       discussionPosts[postIndex].comments.push(comment);
 
       // Update club
-      await club.update({ comment });
+      await club.update({ discussionPosts });
 
       // Return updated club
       res.json(club);
